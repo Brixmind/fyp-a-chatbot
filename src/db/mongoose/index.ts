@@ -10,8 +10,17 @@ const User = new mongoose.Schema({
     raw_obj: Object
 })
 
+const UserMessages = new mongoose.Schema({
+    id: {type:Number, required:true, unique:true, index:true},
+    messages: [Object]
+})
+
 const mUser = mongoose.model('user',User)
+const mUserMessages = mongoose.model('user_messages',UserMessages)
+
 mUser.createIndexes()
+mUserMessages.createIndexes()
+
 export const addUser=(userObj:any)=>{
     return new Promise((resolve,reject)=>{
         let newUser:any = {}
@@ -32,7 +41,18 @@ export const addUser=(userObj:any)=>{
         })
     })
 }
-
+export const addUserMessage=(userid:number,message:any)=>{
+    return new Promise((resolve,reject)=>{
+        mUserMessages.findOneAndUpdate({id:userid},{'$push':{'messages':message}},{upsert:true})
+            .then((data:any)=>{
+                resolve(data)
+            })
+            .catch((err:any)=>{
+                reject(err)
+            })
+    })
+    
+}
 export const DBConnect = () =>{
     return new Promise((resolve,reject)=>{
         if (connection==null) {

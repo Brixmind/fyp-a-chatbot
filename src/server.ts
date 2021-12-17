@@ -1,7 +1,7 @@
 import { ReverseString, User } from "./lib"
 import { Telegraf } from 'telegraf'
 import dotenv from 'dotenv'
-import { addUser, DBConnect } from "./db/mongoose"
+import { addUser, addUserMessage, DBConnect } from "./db/mongoose"
 dotenv.config()
 
 console.log('hello world', process.env.BOT_TOKEN)
@@ -25,10 +25,16 @@ DBConnect().then((connection:any)=>{
     })
     
     bot.on('text',(ctx)=>{
+        let user = (ctx.update as any).message.from
         console.log('I received a text message')
         console.log(ctx.update.message)
         let msg = ctx.update.message.text
-        ctx.reply(`You said ${msg}`)
+        addUserMessage(user.id,ctx.update.message).then((d:any)=>{
+            ctx.reply(`You said ${msg}`)
+        }).catch(e=>{
+            ctx.reply(`Ooops something went wrong...`)
+        })
+        
     })
     
     bot.on('location',(ctx)=>{
