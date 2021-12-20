@@ -15,49 +15,77 @@ export const Triggers = ['registeric']
 //export const Scene = new Scenes.BaseScene<Scenes.SceneContext>(`${Name}`)
 
 export const Wizard = new FWizard(Name,
-    (ctx:any)=>{
-        console.log('---------------------')
-        check_ctx_for(ctx,DATATYPE.NUMBER,'Please type a number').then((res:any)=>{
-            console.log('res',res)
-            if (res?.type==DATATYPE.NUMBER) {
-                ctx.reply('thank you.').then((_ctx:any)=>{
-                    clear_ctx(ctx)
-                    ctx.wizard.selectStep(1)
-                    return ctx.wizard.steps[ctx.wizard.cursor](ctx)
-                })
+    // (ctx:any)=>{
+    //     console.log('---------------------')
+    //     check_ctx_for(ctx,DATATYPE.NUMBER,'Please type a number').then((res:any)=>{
+    //         console.log('res',res)
+    //         if (res?.type==DATATYPE.NUMBER) {
+    //             ctx.reply('thank you.').then((_ctx:any)=>{
+    //                 clear_ctx(ctx)
+    //                 ctx.wizard.selectStep(1)
+    //                 return ctx.wizard.steps[ctx.wizard.cursor](ctx)
+    //             })
                 
-            }
-            //return ctx.wizard.steps[ctx.wizard.cursor](ctx)
-        })
-        //return 
+    //         }
+    //         //return ctx.wizard.steps[ctx.wizard.cursor](ctx)
+    //     })
+    //     //return 
+    // },
+    // (ctx:any)=>{
+    //     console.log('ready1')
+    //     check_ctx_for(ctx, DATATYPE.EMAIL, 'Please add your e-mail address').then((res:any)=>{
+    //         console.log('res',res)
+    //         if (res?.type==DATATYPE.EMAIL) {
+    //             ctx.reply('thank you.').then((_ctx:any)=>{
+    //                 clear_ctx(ctx)
+    //                 ctx.wizard.selectStep(2)
+    //                 return ctx.wizard.steps[ctx.wizard.cursor](ctx)
+    //             })
+                
+    //         }
+    //         //return ctx.wizard.steps[ctx.wizard.cursor](ctx)
+    //     })},
+    // (ctx:any)=>{
+    //     console.log('ready2')
+    //     check_ctx_for(ctx, DATATYPE.PHOTO, 'Please add your photo').then((res:any)=>{
+    //         console.log('res',res)
+    //         if (res?.type==DATATYPE.PHOTO) {
+    //             ctx.reply('thank you.').then((ctx:any)=>{
+    //                 clear_ctx(ctx)
+    //                 ctx.wizard.selectStep(2)
+    //                 return ctx.wizard.steps[ctx.wizard.cursor](ctx)
+    //             })
+                
+    //         }
+    //         //return ctx.wizard.steps[ctx.wizard.cursor](ctx)
+    //     })
+    // },
+    // (ctx:any)=>{
+    //     console.log('ready2')
+    //     check_ctx_for(ctx, DATATYPE.LOCATION, 'Please add a location').then((res:any)=>{
+    //         console.log('res',res)
+    //         if (res?.type==DATATYPE.LOCATION) {
+    //             ctx.reply('thank you.').then((ctx:any)=>{
+    //                 clear_ctx(ctx)
+    //                 ctx.wizard.selectStep(2)
+    //                 return ctx.wizard.steps[ctx.wizard.cursor](ctx)
+    //             })
+                
+    //         }
+    //         //return ctx.wizard.steps[ctx.wizard.cursor](ctx)
+    //     })
+    // },
+    (ctx:any)=>{
+        check_ctx_for(ctx, DATATYPE.CONFIRMCANCEL, 'Please pick one')
+            .then((res:any)=>{
+                console.log(res)
+            })
+        //ctx.reply('please pick one',kbd_inline([{text:'OK',cbvalue:'ok'},{text:'CANCEL',cbvalue:'cancel'}]))
     },
     (ctx:any)=>{
-        console.log('ready1')
-        check_ctx_for(ctx, DATATYPE.EMAIL, 'Please add your e-mail address').then((res:any)=>{
-            console.log('res',res)
-            if (res?.type==DATATYPE.EMAIL) {
-                ctx.reply('thank you.').then((_ctx:any)=>{
-                    clear_ctx(ctx)
-                    ctx.wizard.selectStep(2)
-                    return ctx.wizard.steps[ctx.wizard.cursor](ctx)
-                })
-                
-            }
-            //return ctx.wizard.steps[ctx.wizard.cursor](ctx)
-        })},
-    (ctx:any)=>{
-        console.log('ready2')
-        check_ctx_for(ctx, DATATYPE.PHOTO, 'Please add your photo').then((res:any)=>{
-            console.log('res',res)
-            if (res?.type==DATATYPE.PHOTO) {
-                ctx.reply('thank you.').then((ctx:any)=>{
-                    clear_ctx(ctx)
-                    ctx.wizard.selectStep(2)
-                    return ctx.wizard.steps[ctx.wizard.cursor](ctx)
-                })
-                
-            }
-            //return ctx.wizard.steps[ctx.wizard.cursor](ctx)
+        ctx.reply('Bye').then((d:any)=>{
+            return ctx.scene.leave()
         })
+        
     }
 )
