@@ -197,8 +197,28 @@ export const check_ctx_for =(ctx:any,datatype:string, message:string|any=null,op
                     //console.log(ctx.update)
                     break
                 case DATATYPE.CB_QUERY:
-                    console.log('confirmcancel',ctx.update?.callback_query?.data)
+                    console.log('cb_query',ctx.update?.callback_query?.data)
+                    if (ctx.update?.message?.text!=undefined && ctx.update?.message?.text!=null) {
+                        // did someone enter a number?
+                        value = ctx.update.message.text
+                        if ((!isNaN(value.trim())) && !isNaN(parseFloat(value.trim()))) {
+                            let answer:number = parseInt(value.trim()) - 1
+                            console.log('answer is',answer)
+                            if (answer >= 0 && answer < options.length) {
+                                value = options[answer]?.cbvalue
+                                if (value == undefined) {
+                                    value = options[answer]?.url
+                                    if (options[answer]?.url) ctx.reply(`Click on this link ${options[answer].url}`)
+                                }
+                                delete ctx.update.message.text
+                                result.type = DATATYPE.CB_QUERY
+                                result.value = value
+                                resolve(result)
+                            }
+                        }
+                    }
                     if (ctx.update?.callback_query?.data != undefined && ctx.update?.callback_query?.data != null) {
+                        ctx.editMessageText('[menu used]',null)
                         value = ctx.update.callback_query.data
                         result.type = DATATYPE.CB_QUERY
                         result.value = ctx.update.callback_query.data
@@ -209,12 +229,31 @@ export const check_ctx_for =(ctx:any,datatype:string, message:string|any=null,op
                     }
                     break
                 case DATATYPE.CONFIRMCANCEL:
-                    options = [{text:'Confirm IT now',cbvalue:'confirm'},{text:'Cancel it lah', cbvalue:'cancel'}]
-                    console.log('confirmcancel',ctx.update?.callback_query?.data)
+                    /*
+                    resolves boolean (true=confirm, false=cancel, null=unknown)
+                    */
+                    options = [{text:'Confirm',cbvalue:'confirm'},{text:'Cancel', cbvalue:'cancel'}]
+                    if (ctx.update?.message?.text!=undefined && ctx.update?.message?.text!=null) {
+                        value = ctx.update.message.text
+                        if ((!isNaN(value.trim())) && !isNaN(parseFloat(value.trim()))) {
+                            console.log(options.length)
+                            let answer:number = parseInt(value.trim()) - 1
+                            if (answer >= 0 && answer < options.length) {
+                                value = (options[answer]?.cbvalue == 'confirm')
+                                delete ctx.update.message.text
+                                result.type = DATATYPE.CB_QUERY
+                                result.value = value
+                                ctx.reply(`(${options[answer]?.text})`)
+                                resolve(result)
+                            }
+                        }
+                    }
+                    //console.log('confirmcancel',ctx.update?.callback_query?.data)
                     if (ctx.update?.callback_query?.data != undefined && ctx.update?.callback_query?.data != null) {
-                        value = ctx.update.callback_query.data
+                        ctx.editMessageText('[menu used]',null)
+                        value = (ctx.update.callback_query.data == 'confirm')
                         result.type = DATATYPE.CONFIRMCANCEL
-                        result.value = ctx.update.callback_query.data
+                        result.value = value
                         delete ctx.update.callback_query.data 
                         resolve(result)
                     } else {
@@ -229,7 +268,7 @@ export const check_ctx_for =(ctx:any,datatype:string, message:string|any=null,op
                 if (message != null) {
                     console.log('message')
                     if (options != null) {
-                        kbd_inline(options).then((kbd:any)=>{
+                        kbd_inline(options,1).then((kbd:any)=>{
                             ctx.reply(message,kbd).then((dd:any)=>{
                                 resolve(false)
                             })
@@ -251,38 +290,5 @@ export const check_ctx_for =(ctx:any,datatype:string, message:string|any=null,op
         
         
         
-    })
-}
-export const wait_for = (ctx:any, datatype:string,prompt:string,options:any)=>{
-    return new Promise((resolve,reject)=>{
-        check_ctx_for(ctx,datatype).then((res:any)=>{
-            resolve(null)
-        })
-        switch (datatype) {
-            case DATATYPE.CB_QUERY:
-                break
-            case DATATYPE.TEXT:
-                break
-            case DATATYPE.NUMBER:
-                break
-            case DATATYPE.DATE:
-                break
-            case DATATYPE.EMAIL:
-                break
-            case DATATYPE.PHOTO:
-                break
-            case DATATYPE.VIDEO:
-                break
-            case DATATYPE.AUDIO:
-                break
-            case DATATYPE.DOCUMENT:
-                break
-            case DATATYPE.CONFIRMCANCEL:
-                break
-            case DATATYPE.LOCATION:
-                break
-            default:
-                resolve(null)
-        }
     })
 }

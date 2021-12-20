@@ -1,5 +1,6 @@
 import { Markup, Telegraf } from "telegraf"
 import { get_state, save_state } from "../../db/mongoose"
+import axios from 'axios'
 
 export const TG_TYPES = {
     'CB_QUERY' : 'callback_query',
@@ -11,26 +12,41 @@ export const kbd_reply = (ctx:any,msg:string,options:string[])=>{
     return ctx.reply('message', Markup.keyboard(options).oneTime())
 }
 
-export const kbd_inline = (options:any[])=>{
+export const kbd_inline = (options:any[],items_per_row:number=2)=>{
+    if (items_per_row<1) items_per_row=1
     return new Promise((resolve,reject)=>{
-        let buttons = [
+        let all_buttons = [
             [
                 Markup.button.callback('one two three','count'),
                 Markup.button.callback('a b c','alphabet')
             ]
         ]
         if (options && options.length>0) {
-            buttons = []
+            all_buttons = []
             let row:Array<any> = []
+            let counter = 1
             options.map((o:any)=>{
                 //console.log('ooo',o)
-                if (o.cbvalue != undefined) row.push(Markup.button.callback(o.text,o.cbvalue))
-                if (o.url != undefined) row.push(Markup.button.url(o.text,o.url))
+                switch (true) {
+                    case (o.cbvalue != undefined):
+                        row.push(Markup.button.callback(`${counter}. ${o.text}`,o.cbvalue))
+                        break;
+                    case (o.url != undefined):
+                        row.push(Markup.button.url(`${counter}. ${o.text}`,o.url))
+                        break;
+                }
+                counter++
+                if ((row.length >0) && (row.length>=items_per_row)) {
+                    all_buttons.push(row)
+                    row=[]
+                }
             })
-            buttons.push(row)
+            if (row.length>0) {
+                all_buttons.push(row)
+                row = []
+            }
         }
-        //console.log('kbd_inline',buttons)
-        resolve(Markup.inlineKeyboard(buttons))
+        resolve(Markup.inlineKeyboard(all_buttons))
     })
 }
 
@@ -141,3 +157,16 @@ export const set_state = (ctx:any,data:any=null)=>{
     
 }
 
+export const get_download_path = (file_id:string)=>{
+    return new Promise((resolve,reject)=>{
+        axios.get(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/getfile?file_id=${file_id}`)
+        .then((response:any)=>{
+            console.log('got',response?.data?.result)
+            resolve(response?.data?.result)
+        })
+        .catch((error:any)=>{
+            reject(error)
+        })
+    })
+    
+}

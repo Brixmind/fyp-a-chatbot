@@ -6,6 +6,9 @@ import { clear_ctx } from '../lib/tg'
 
 export let AllScenes:any = []
 export let AllWizards:any = {}
+
+let default_wizard:any = null
+let env_default_wizard:any = process.env.DEFAULT_WIZARD
 //
 
 let MainStage:any
@@ -48,6 +51,10 @@ export const PluginInit=(bot:any)=>{
                     //console.log('Found Wizard',o['Name'])
                     if (allkeys_AllScenes.indexOf(o['Name'])<0) {
                         AllScenes[o['Name']] = o['Wizard']
+                        if (env_default_wizard==o['Name']) {
+                            console.log('setting default_wizard:', o['Name'])
+                            default_wizard = o['Name']
+                        }
                     }
                     if (exposed_methods.indexOf('Triggers')>=0) {
                         AllTriggers[o['Name']] = o['Triggers']
@@ -60,7 +67,7 @@ export const PluginInit=(bot:any)=>{
             console.log('Number of Scenes registered:',Object.keys(AllScenes).length)
             
             // all scenes have a maximum ttl of one hour
-            resolve(new Scenes.Stage<Scenes.SceneContext>(Object.keys(AllScenes).map((key)=>{return AllScenes[key]}),{ttl:(ONEHOUR)}))
+            resolve(new Scenes.Stage<Scenes.SceneContext>(Object.keys(AllScenes).map((key)=>{return AllScenes[key]}),{default:default_wizard,ttl:(ONEHOUR)}))
             
         })
     })

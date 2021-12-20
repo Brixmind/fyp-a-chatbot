@@ -11,8 +11,6 @@ export const Visible = true
 // Trigger = text or intent which trigers the Wizard
 export const Triggers = ['register']
 
-// Scene = initialise the Scene object 
-//export const Scene = new Scenes.BaseScene<Scenes.SceneContext>(`${Name}`)
 
 export const Wizard = new FWizard(Name,
     (ctx:any)=>{

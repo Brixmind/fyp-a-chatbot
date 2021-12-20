@@ -1,15 +1,15 @@
 import { Telegraf, Context, Scenes, Markup, session } from 'telegraf'
-import { check_ctx_type, kbd_inline,TG_TYPES,CTX_RES, clear_ctx, check_email } from '../../lib/tg'
+import { check_ctx_type, kbd_inline,TG_TYPES,CTX_RES, clear_ctx, check_email, get_download_path } from '../../lib/tg'
 import { Middleware } from '../../middleware/default'
-import { FWizard, DATATYPE, check_ctx_for, wait_for } from './factory'
+import { FWizard, DATATYPE, check_ctx_for } from './factory'
 
 // const {enter, leave} = Scenes.Stage
 // Name = name of the Scene or Wizard
-export const Name = 'register-ic'
+export const Name = 'test-wizard'
 
 export const Visible = true
 // Trigger = text or intent which trigers the Wizard
-export const Triggers = ['registeric']
+export const Triggers = ['test']
 
 // Scene = initialise the Scene object 
 //export const Scene = new Scenes.BaseScene<Scenes.SceneContext>(`${Name}`)
@@ -45,21 +45,28 @@ export const Wizard = new FWizard(Name,
     //         }
     //         //return ctx.wizard.steps[ctx.wizard.cursor](ctx)
     //     })},
-    // (ctx:any)=>{
-    //     console.log('ready2')
-    //     check_ctx_for(ctx, DATATYPE.PHOTO, 'Please add your photo').then((res:any)=>{
-    //         console.log('res',res)
-    //         if (res?.type==DATATYPE.PHOTO) {
-    //             ctx.reply('thank you.').then((ctx:any)=>{
-    //                 clear_ctx(ctx)
-    //                 ctx.wizard.selectStep(2)
-    //                 return ctx.wizard.steps[ctx.wizard.cursor](ctx)
-    //             })
+    (ctx:any)=>{
+        console.log('ready2')
+        check_ctx_for(ctx, DATATYPE.PHOTO, 'Please add your photo').then((res:any)=>{
+            console.log('res',res)
+            if (res?.type==DATATYPE.PHOTO) {
+                ctx.reply('thank you.').then((_:any)=>{
+                    get_download_path(res.value?.file_id).then((result:any)=>{
+                        console.log(result?.file_path)
+                        if (result?.file_path != undefined) {
+                            ctx.reply(`https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${result.file_path}`)
+                        }
+                        
+                    })
+                    clear_ctx(ctx)
+                    //ctx.wizard.selectStep(2)
+                    //return ctx.wizard.steps[ctx.wizard.cursor](ctx)
+                })
                 
-    //         }
-    //         //return ctx.wizard.steps[ctx.wizard.cursor](ctx)
-    //     })
-    // },
+            }
+            //return ctx.wizard.steps[ctx.wizard.cursor](ctx)
+        })
+    },
     // (ctx:any)=>{
     //     console.log('ready2')
     //     check_ctx_for(ctx, DATATYPE.LOCATION, 'Please add a location').then((res:any)=>{
@@ -75,13 +82,22 @@ export const Wizard = new FWizard(Name,
     //         //return ctx.wizard.steps[ctx.wizard.cursor](ctx)
     //     })
     // },
-    (ctx:any)=>{
-        check_ctx_for(ctx, DATATYPE.CONFIRMCANCEL, 'Please pick one')
-            .then((res:any)=>{
-                console.log(res)
-            })
-        //ctx.reply('please pick one',kbd_inline([{text:'OK',cbvalue:'ok'},{text:'CANCEL',cbvalue:'cancel'}]))
-    },
+    // (ctx:any)=>{
+    //     check_ctx_for(ctx, DATATYPE.CONFIRMCANCEL, 'Please pick one')
+    //         .then((res:any)=>{
+    //             console.log('value',res.value)
+    //             if (res.value==true) {
+    //                 ctx.reply('good').then((r:any)=>{
+    //                     return ctx.scene.leave()
+    //                 })
+    //             } else if (res.value==false) {
+    //                 ctx.reply('bye').then((r:any)=>{
+    //                     return ctx.scene.leave()
+    //                 })
+                    
+    //             }
+    //         })
+    // },
     (ctx:any)=>{
         ctx.reply('Bye').then((d:any)=>{
             return ctx.scene.leave()

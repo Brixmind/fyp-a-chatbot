@@ -1,12 +1,13 @@
 import { Telegraf, Context, Scenes, Markup, session } from 'telegraf'
 import LocalSession from 'telegraf-session-local'
 import dotenv from 'dotenv'
+dotenv.config()
 import { addUser, addUserMessage, DBConnect } from "./db/mongoose"
 import { ReverseString, User } from "./lib"
 import { GetTriggers, PluginInit, ProcessTriggers } from './stages'
 import { InitEvents, Middleware } from './middleware/default'
 
-dotenv.config()
+
 
 console.log('hello world', process.env.BOT_TOKEN)
 
