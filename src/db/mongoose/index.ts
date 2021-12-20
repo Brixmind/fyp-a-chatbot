@@ -15,11 +15,28 @@ const UserMessages = new mongoose.Schema({
     messages: [Object]
 })
 
+const Groups = new mongoose.Schema({
+    id: {type:Number,required:true},
+    group_id: {type:Number,required:true},
+    date_added: Date,
+    raw_obj: Object
+})
+
+const State = new mongoose.Schema({
+    id: {type:Number, required:true},
+    scene: {type:String, required:true},
+    date_added: Date,
+    data: Object
+})
+State.index({id:1,scene:1},{unique:true})
 const mUser = mongoose.model('user',User)
 const mUserMessages = mongoose.model('user_messages',UserMessages)
+const mGroups = mongoose.model('groups',Groups)
+const mState = mongoose.model('state',State)
 
 mUser.createIndexes()
 mUserMessages.createIndexes()
+mState.createIndexes()
 
 export const addUser=(userObj:any)=>{
     return new Promise((resolve,reject)=>{
@@ -29,9 +46,7 @@ export const addUser=(userObj:any)=>{
         newUser['name'] = userObj['first_name'] + ' ' + userObj['last_name']
         newUser['raw_obj'] = userObj
         newUser['date_added'] = new Date()
-
         const newData:any = new mUser(newUser)
-
         mUser.findOneAndUpdate({id:newUser['id']},newUser,{upsert:true}).then((data:any)=>{
             console.log('saved',data)
             resolve(data)
@@ -67,4 +82,23 @@ export const DBConnect = () =>{
         }
     })
 }
-
+export const save_state = (userid:any,scene:any,data:any)=>{
+    return new Promise((resolve,reject)=>{
+        const newData = {
+            userid:userid,
+            scene:scene,
+            date_added: new Date(),
+            data: data
+        }
+        mState.findOneAndUpdate({id:userid,scene:scene},newData, {upsert:true})
+            .then((d:any)=>{resolve(d)})
+            .catch((e:any)=>{reject(e)})
+    })
+}
+export const get_state = (userid:any,scene:any)=>{
+    return new Promise((resolve,reject)=>{
+        mState.findOne({id:userid,scene:scene})
+            .then((d:any)=>{resolve(d)})
+            .catch((e:any)=>{reject(e)})
+    })
+}
