@@ -3,6 +3,7 @@ import { Telegraf, Context, Scenes, Markup, session, Middleware, Telegram } from
 import { kbd_inline } from '../../lib/tg'
 export const DATATYPE = {
     'CB_QUERY':'cb_query',
+    'CB_QUERY_MULTI':'cb_query_multi',
     'TEXT': 'text',
     'NUMBER': 'number',
     'DATE': 'date',
@@ -48,7 +49,7 @@ const Events = (ctx:any,next:any)=>{
     // })
 }
 
-export const check_ctx_for =(ctx:any,datatype:string, message:string|any=null,options:any=null)=>{
+export const check_ctx_for =(ctx:any,datatype:string, message:string|any=null,options:any=null,selected_options:any[]|null=null)=>{
     
     return new Promise((resolve,reject)=>{
         let result:ResultPayload = {type:null, value:null}
@@ -228,6 +229,37 @@ export const check_ctx_for =(ctx:any,datatype:string, message:string|any=null,op
                         resolve(null)
                     }
                     break
+                case DATATYPE.CB_QUERY_MULTI:
+                    if (ctx.update?.message?.text!=undefined && ctx.update?.message?.text!=null) {
+                        // did someone enter a number?
+                        value = ctx.update.message.text
+                        if ((!isNaN(value.trim())) && !isNaN(parseFloat(value.trim()))) {
+                            let answer:number = parseInt(value.trim()) - 1
+                            console.log('answer is',answer)
+                            if (answer >= 0 && answer < options.length) {
+                                value = options[answer]?.cbvalue
+                                if (value == undefined) {
+                                    value = options[answer]?.url
+                                    if (options[answer]?.url) ctx.reply(`Click on this link ${options[answer].url}`)
+                                }
+                                delete ctx.update.message.text
+                                result.type = DATATYPE.CB_QUERY
+                                result.value = value
+                                resolve(result)
+                            }
+                        }
+                    }
+                    if (ctx.update?.callback_query?.data != undefined && ctx.update?.callback_query?.data != null) {
+                        ctx.editMessageText('[menu used]',null)
+                        value = ctx.update.callback_query.data
+                        result.type = DATATYPE.CB_QUERY
+                        result.value = ctx.update.callback_query.data
+                        delete ctx.update.callback_query.data 
+                        resolve(result)
+                    } else {
+                        resolve(null)
+                    }
+                    break
                 case DATATYPE.CONFIRMCANCEL:
                     /*
                     resolves boolean (true=confirm, false=cancel, null=unknown)
@@ -268,7 +300,7 @@ export const check_ctx_for =(ctx:any,datatype:string, message:string|any=null,op
                 if (message != null) {
                     console.log('message')
                     if (options != null) {
-                        kbd_inline(options,1).then((kbd:any)=>{
+                        kbd_inline(options,selected_options,1).then((kbd:any)=>{
                             ctx.reply(message,kbd).then((dd:any)=>{
                                 resolve(false)
                             })

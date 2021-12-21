@@ -103,7 +103,7 @@ export const Wizard = new FWizard(Name,
                                 {text:'Confirm',cbvalue:'confirm'},
                                 {text:'Retry',cbvalue:'retry'},
                                 {text:'Cancel',cbvalue:'cancel'}
-                            ]).then((kbd:any)=>{
+                            ],[]).then((kbd:any)=>{
                                 ctx.reply(`Confirm text entry [${res.data}]`, kbd )
                             })
                         }

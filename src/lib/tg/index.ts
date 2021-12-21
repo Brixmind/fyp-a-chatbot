@@ -12,7 +12,7 @@ export const kbd_reply = (ctx:any,msg:string,options:string[])=>{
     return ctx.reply('message', Markup.keyboard(options).oneTime())
 }
 
-export const kbd_inline = (options:any[],items_per_row:number=2)=>{
+export const kbd_inline = (options:any[],selected_options:any[]|null=null,items_per_row:number=2)=>{
     if (items_per_row<1) items_per_row=1
     return new Promise((resolve,reject)=>{
         let all_buttons = [
@@ -27,12 +27,19 @@ export const kbd_inline = (options:any[],items_per_row:number=2)=>{
             let counter = 1
             options.map((o:any)=>{
                 //console.log('ooo',o)
+                let label = o.text
+                if (selected_options?.length) {
+                    console.log('selected',selected_options,o.cbvalue)
+                    if (selected_options.indexOf(o.cbvalue)>=0) {
+                        label = `[${label}]`
+                    }
+                }
                 switch (true) {
                     case (o.cbvalue != undefined):
-                        row.push(Markup.button.callback(`${counter}. ${o.text}`,o.cbvalue))
+                        row.push(Markup.button.callback(`${counter}. ${label}`,o.cbvalue))
                         break;
                     case (o.url != undefined):
-                        row.push(Markup.button.url(`${counter}. ${o.text}`,o.url))
+                        row.push(Markup.button.url(`${counter}. ${label}`,o.url))
                         break;
                 }
                 counter++
