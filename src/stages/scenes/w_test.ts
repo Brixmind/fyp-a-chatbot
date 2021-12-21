@@ -11,6 +11,8 @@ export const Visible = true
 // Trigger = text or intent which trigers the Wizard
 export const Triggers = ['test']
 
+let selected:any = []
+
 // Scene = initialise the Scene object 
 //export const Scene = new Scenes.BaseScene<Scenes.SceneContext>(`${Name}`)
 
@@ -99,17 +101,34 @@ export const Wizard = new FWizard(Name,
     //         })
     // },
     (ctx:any)=>{
-        check_ctx_for(ctx, DATATYPE.EMAIL,'Please enter your email below.').then((res:any)=>{
-            console.log(res)
-            if (res.type==DATATYPE.EMAIL) {
+        console.log("Array:", selected)
+        let options = [
+            {text:`1`, cbvalue:"1"},
+            {text:`2`, cbvalue:"2"},
+            {text:`3`, cbvalue:"3"},
+            {text:"done", cbvalue:"done"}
+        ]
+        check_ctx_for(ctx, DATATYPE.CB_QUERY_MULTI,'Please select multiple options.', options, selected).then((res:any)=>{
+            console.log("res:", res)
+            if (res.type==DATATYPE.CB_QUERY_MULTI && res.value=="done") {
                 ctx.reply(`thank you for your input`).then((_:any)=>{
-                    let data = {email:res.value}
-                    set_state_property(ctx,'email',res.value).then((_:any)=>{
+                    set_state_property(ctx,'done',res.value).then((_:any)=>{
+                        selected = []
                         ctx.wizard.next()
                         return ctx.wizard.steps[ctx.wizard.cursor](ctx);
                     })
                     
                 })
+            } else if (res.type==DATATYPE.CB_QUERY_MULTI && res.value!="done") {
+                if(selected.includes(res.value)) {
+                    selected = selected.filter((e:any) => e !== res.value)
+                }
+                else {
+                    console.log(res.value)
+                    selected.push(res.value)
+                }
+                ctx.wizard.selectStep(0)
+                return ctx.wizard.steps[ctx.wizard.cursor](ctx);
             }
             
         })

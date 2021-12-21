@@ -230,6 +230,7 @@ export const check_ctx_for =(ctx:any,datatype:string, message:string|any=null,op
                     }
                     break
                 case DATATYPE.CB_QUERY_MULTI:
+                    console.log('cb_query_multi',ctx.update?.callback_query?.data)
                     if (ctx.update?.message?.text!=undefined && ctx.update?.message?.text!=null) {
                         // did someone enter a number?
                         value = ctx.update.message.text
@@ -243,16 +244,15 @@ export const check_ctx_for =(ctx:any,datatype:string, message:string|any=null,op
                                     if (options[answer]?.url) ctx.reply(`Click on this link ${options[answer].url}`)
                                 }
                                 delete ctx.update.message.text
-                                result.type = DATATYPE.CB_QUERY
+                                result.type = DATATYPE.CB_QUERY_MULTI
                                 result.value = value
                                 resolve(result)
                             }
                         }
                     }
                     if (ctx.update?.callback_query?.data != undefined && ctx.update?.callback_query?.data != null) {
-                        ctx.editMessageText('[menu used]',null)
                         value = ctx.update.callback_query.data
-                        result.type = DATATYPE.CB_QUERY
+                        result.type = DATATYPE.CB_QUERY_MULTI
                         result.value = ctx.update.callback_query.data
                         delete ctx.update.callback_query.data 
                         resolve(result)
