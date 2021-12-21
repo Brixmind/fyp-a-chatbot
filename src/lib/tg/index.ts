@@ -31,7 +31,7 @@ export const kbd_inline = (options:any[],selected_options:any[]|null=null,items_
                 if (selected_options?.length) {
                     console.log('selected',selected_options,o.cbvalue)
                     if (selected_options.indexOf(o.cbvalue)>=0) {
-                        label = `[${label}]`
+                        label = `${label} [T]`
                     }
                 }
                 switch (true) {
@@ -131,7 +131,7 @@ export const init_state = (ctx:any)=>{
         }
         get_state(scene_prop.userid,scene_prop.scene).then((state:any)=>{
             console.log('retrieved state',state)
-            if (state.data!=undefined) {
+            if (state?.data!=undefined) {
                 ctx.wizard.state.data = state.data
                 resolve(state.data)
             } else {
