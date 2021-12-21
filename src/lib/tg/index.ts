@@ -147,6 +147,58 @@ export const init_state = (ctx:any)=>{
     })
 }
 
+export const set_state_property = (ctx:any, property_name:string, value:any)=>{
+    const scene_prop = get_scene_properties(ctx)
+    return new Promise((resolve,reject)=>{
+        get_state(scene_prop.userid,scene_prop.scene).then((sd:any)=>{
+            let scene_data = sd?.data
+            if (scene_data==undefined) {
+                scene_data = {}
+            }
+            scene_data[property_name] = value
+
+            save_state(scene_prop.userid,scene_prop.scene,scene_data).then((_:any)=>{
+                resolve(_)
+            }).catch((e:any)=>{
+                reject(e)
+            })
+        })
+    })
+}
+
+export const get_state_property = (ctx:any, property_name:string) =>{
+    const scene_prop = get_scene_properties(ctx)
+    return new Promise((resolve,reject)=>{
+        get_state(scene_prop.userid,scene_prop.scene).then((sd:any)=>{
+            let scene_data = sd?.data
+            resolve(scene_data[`${property_name}`])
+        })
+    })
+}
+
+export const clear_state = (ctx:any, scene_name:string|null = null,property_name:string|null=null) =>{
+    const scene_prop = get_scene_properties(ctx)
+    if (scene_name != null) scene_prop.scene = scene_name
+    return new Promise((resolve,reject)=>{
+        get_state(scene_prop.userid,scene_prop.scene).then((sd:any)=>{
+            let scene_data = sd?.data
+            if (scene_data == undefined || scene_data == null) scene_data = {}
+            if (property_name != null && Object.keys(scene_data).indexOf(property_name)>=0) {
+                delete scene_data[`${property_name}`]
+            } else {
+                scene_data = {}
+            }
+            console.log('before delete',scene_data)
+            save_state(scene_prop.userid,scene_prop.scene,scene_data).then((d:any)=>{
+                console.log('after delete',d)
+                resolve(d)
+            }).catch((e:any)=>{
+                reject(e)
+            })
+        })
+    })
+}
+
 export const set_state = (ctx:any,data:any=null)=>{
     const scene_prop = get_scene_properties(ctx)
     if (data==null) data = ctx.wizard?.state?.data

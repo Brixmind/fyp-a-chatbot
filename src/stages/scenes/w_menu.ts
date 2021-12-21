@@ -13,12 +13,20 @@ export const Triggers = ['mainmenu']
 
 export const Wizard = new FWizard(Name,
     (ctx:any)=>{
-        check_ctx_for(ctx,DATATYPE.CB_QUERY,'Welcome to the Bot',[{text:'Run Test',cbvalue:'runtest'},{text:'Register User',cbvalue:'register'},{text:'Do other things',cbvalue:'otherthings'}])
+        check_ctx_for(ctx,DATATYPE.CB_QUERY,'Welcome to the Bot',[
+            {text:'Run Test',cbvalue:'runtest'},
+            {text:'Register your CV',cbvalue:'uploadcv'},
+            {text:'Reset CV',cbvalue:'clearcv'},
+            {text:'Register User',cbvalue:'register'}]  )
         .then((res:any)=>{
             if (res != null && res != false) {
                 switch (true) {
                     case (res.value=='runtest'):
                         return ctx.scene.enter('test-wizard')
+                    case (res.value=='uploadcv'):
+                        return ctx.scene.enter('upload-cv-wizard')
+                    case (res.value=='clearcv'):
+                        return ctx.scene.enter('clear-cv-wizard')
                     case (res.value=='register'):
                         return ctx.scene.enter('register-user')
                 }

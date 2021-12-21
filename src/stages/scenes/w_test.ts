@@ -1,5 +1,5 @@
 import { Telegraf, Context, Scenes, Markup, session } from 'telegraf'
-import { check_ctx_type, kbd_inline,TG_TYPES,CTX_RES, clear_ctx, check_email, get_download_path } from '../../lib/tg'
+import { check_ctx_type, kbd_inline,TG_TYPES,CTX_RES, clear_ctx, check_email, get_download_path, set_state, set_state_property } from '../../lib/tg'
 import { Middleware } from '../../middleware/default'
 import { FWizard, DATATYPE, check_ctx_for } from './factory'
 
@@ -45,28 +45,28 @@ export const Wizard = new FWizard(Name,
     //         }
     //         //return ctx.wizard.steps[ctx.wizard.cursor](ctx)
     //     })},
-    (ctx:any)=>{
-        console.log('ready2')
-        check_ctx_for(ctx, DATATYPE.PHOTO, 'Please add your photo').then((res:any)=>{
-            console.log('res',res)
-            if (res?.type==DATATYPE.PHOTO) {
-                ctx.reply('thank you.').then((_:any)=>{
-                    get_download_path(res.value?.file_id).then((result:any)=>{
-                        console.log(result?.file_path)
-                        if (result?.file_path != undefined) {
-                            ctx.reply(`https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${result.file_path}`)
-                        }
+    // (ctx:any)=>{
+    //     console.log('ready2')
+    //     check_ctx_for(ctx, DATATYPE.PHOTO, 'Please add your photo').then((res:any)=>{
+    //         console.log('res',res)
+    //         if (res?.type==DATATYPE.PHOTO) {
+    //             ctx.reply('thank you.').then((_:any)=>{
+    //                 get_download_path(res.value?.file_id).then((result:any)=>{
+    //                     console.log(result?.file_path)
+    //                     if (result?.file_path != undefined) {
+    //                         ctx.reply(`https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${result.file_path}`)
+    //                     }
                         
-                    })
-                    clear_ctx(ctx)
-                    //ctx.wizard.selectStep(2)
-                    //return ctx.wizard.steps[ctx.wizard.cursor](ctx)
-                })
+    //                 })
+    //                 clear_ctx(ctx)
+    //                 //ctx.wizard.selectStep(2)
+    //                 //return ctx.wizard.steps[ctx.wizard.cursor](ctx)
+    //             })
                 
-            }
-            //return ctx.wizard.steps[ctx.wizard.cursor](ctx)
-        })
-    },
+    //         }
+    //         //return ctx.wizard.steps[ctx.wizard.cursor](ctx)
+    //     })
+    // },
     // (ctx:any)=>{
     //     console.log('ready2')
     //     check_ctx_for(ctx, DATATYPE.LOCATION, 'Please add a location').then((res:any)=>{
@@ -98,6 +98,35 @@ export const Wizard = new FWizard(Name,
     //             }
     //         })
     // },
+    (ctx:any)=>{
+        check_ctx_for(ctx, DATATYPE.EMAIL,'Please enter your email below.').then((res:any)=>{
+            console.log(res)
+            if (res.type==DATATYPE.EMAIL) {
+                ctx.reply(`thank you for your input`).then((_:any)=>{
+                    let data = {email:res.value}
+                    set_state_property(ctx,'email',res.value).then((_:any)=>{
+                        ctx.wizard.next()
+                        return ctx.wizard.steps[ctx.wizard.cursor](ctx);
+                    })
+                    
+                })
+            }
+            
+        })
+    },
+    (ctx:any)=>{
+        check_ctx_for(ctx, DATATYPE.LOCATION, 'Please share your location.').then((res:any)=>{
+            console.log(res)
+            if (res.type==DATATYPE.LOCATION) {
+                ctx.reply(`now I know where you are`).then((_:any)=>{
+                    set_state_property(ctx,'location',res.value).then((_:any)=>{
+                        ctx.wizard.next()
+                        return ctx.wizard.steps[ctx.wizard.cursor](ctx);
+                    })
+                })
+            }
+        })
+    },
     (ctx:any)=>{
         ctx.reply('Bye').then((d:any)=>{
             return ctx.scene.leave()
