@@ -22,10 +22,9 @@ export const Wizard = new FWizard(Name,
         ctx.reply('welcome')
         check_ctx_for(ctx,DATATYPE.TEXT,'Please type your question (or type \'bye\' to exit)')
         .then((res:any)=>{
-            console.log('res',res)
-            if ((res.value as string).toLowerCase().trim() == 'bye') {
+            if ((res.value as string)?.toLowerCase().trim() == 'bye') {
 
-                socket.broadcast.emit('tg-signal',{data:'byeeee'})
+                socket.emit('tg-signal',{ctx})
                 ctx.reply('Thank you, off you go...').then((_:any)=>{
                     ctx.scene.leave()
                 })

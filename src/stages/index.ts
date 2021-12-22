@@ -91,7 +91,7 @@ export const ProcessTriggers = (bot:any,socket:any)=>{
                     console.log(`Starting ${name} with ${trigger}`)
 
                     try {
-                        console.log('processTriggers.socket',socket)
+                        //console.log('processTriggers.socket',socket)
                         clear_ctx(_ctx)
                         if (socket != undefined) {
                             console.log('socket is loaded')
