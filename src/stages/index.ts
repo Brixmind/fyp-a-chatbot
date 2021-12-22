@@ -77,7 +77,7 @@ export const GetTriggers = ()=>{
     return AllTriggers
 }
 
-export const ProcessTriggers = (bot:any)=>{
+export const ProcessTriggers = (bot:any,socket:any)=>{
     //console.log('>>>>ProcessTriggers')
     Object.keys(AllTriggers).map((name:string)=>{
         let triggers:Array<any> = AllTriggers[name]
@@ -91,8 +91,19 @@ export const ProcessTriggers = (bot:any)=>{
                     console.log(`Starting ${name} with ${trigger}`)
 
                     try {
+                        console.log('processTriggers.socket',socket)
                         clear_ctx(_ctx)
-                        _ctx.scene.enter(name)
+                        if (socket != undefined) {
+                            console.log('socket is loaded')
+                            _ctx.scene.enter(name)
+                            // socket.on('server-broadcast',(payload:any)=>{
+                            //     console.log('xxxxxxxx')
+                            //     _ctx.reply(JSON.stringify(payload))
+                            // })
+                        } else {
+                            _ctx.scene.enter(name)
+                        }
+                        
                     } catch(e) {
                         console.log('error',e)
                         throw('Unable to start scene')

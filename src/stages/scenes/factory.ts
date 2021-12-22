@@ -86,6 +86,19 @@ export const check_ctx_for =(ctx:any,datatype:string, message:string|any=null,op
                         }
                     }
                     break
+                case DATATYPE.TEXT:
+
+                    if (ctx.update?.message?.text!=undefined && ctx.update?.message?.text!=null) {
+
+                        result.type = DATATYPE.TEXT
+                        result.value = ctx.update.message.text
+                        delete ctx.update.message.text
+                        resolve(result)
+
+                    } else {
+                        resolve(null)
+                    }
+                    break
                 case DATATYPE.NUMBER:
                     if (ctx.update?.message?.text!=undefined && ctx.update?.message?.text!=null) {
                         //message = null
