@@ -16,6 +16,7 @@ export const Wizard = new FWizard(Name,
         check_ctx_for(ctx,DATATYPE.CB_QUERY,'Welcome to the Bot',[
             {text:'Run Test',cbvalue:'runtest'},
             {text:'Register your CV',cbvalue:'uploadcv'},
+            {text:'Helpdesk Wizard',cbvalue:'helpdesk'},
             {text:'Reset CV',cbvalue:'clearcv'},
             {text:'Register User',cbvalue:'register'}]  )
         .then((res:any)=>{
@@ -27,6 +28,8 @@ export const Wizard = new FWizard(Name,
                         return ctx.scene.enter('upload-cv-wizard')
                     case (res.value=='clearcv'):
                         return ctx.scene.enter('clear-cv-wizard')
+                    case (res.value=='helpdesk'):
+                        return ctx.scene.enter('helpdesk-wizard')
                     case (res.value=='register'):
                         return ctx.scene.enter('register-user')
                 }

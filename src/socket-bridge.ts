@@ -12,12 +12,9 @@ if (process.env.SOCKET_BRIDGE_PORT!=undefined) {
 app.use(express.static(path.join(__dirname,'test_static')))
 let http = require('http').Server(app)
 let io = require('socket.io')(http)
-// app.get('/', (req:any,res:any)=>{
-//     res.send('don\'t call me here')
-// })
 
 io.on('connection',(socket:any)=>{
-    console.log('user connected')
+    console.log(`user connected ${socket.id} connected`)
     socket.on('test-signal',(payload:any)=>{
         console.log(`received`,payload)
         socket.emit('server-message',{received:payload,dt:new Date()})

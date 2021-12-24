@@ -1,5 +1,6 @@
 import moment from 'moment'
 import { Telegraf, Context, Scenes, Markup, session, Middleware, Telegram } from 'telegraf'
+import { SSocket } from '../../lib/socket_client_bridge'
 import { kbd_inline } from '../../lib/tg'
 export const DATATYPE = {
     'CB_QUERY':'cb_query',
@@ -21,20 +22,35 @@ interface ResultPayload {
 }
 export class FWizard extends Scenes.WizardScene<any> {
 
+    static socket:any = undefined
+    name:any = undefined
+
     constructor(name:string,...steps: Array<any>) {
         super(name,...steps)
+        let _ = new SSocket()
+        FWizard.socket = _.getSocket()
+        if (FWizard.socket != undefined && FWizard.socket != null) {
+            FWizard.socket.emit('tg-signal',{data:`Wizard Initialized ${name}`})
+        }
         this.use(Events)
     }
 
-    next(ctx:any,step:number) {
-
+    static next(ctx:any,step:number|any=null) {
+        if (step == null) {
+            ctx.wizard.next()
+        } else {
+            ctx.wizard.selectStep(step)
+        }
+        return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     }
 
-    leaveWizard(ctx:any) {
-       ctx.scene.leave()
+    static leaveWizard(ctx:any) {
+        FWizard.socket?.emit('tg-signal',{data:`Exiting ${this.name}`})
+        ctx.scene.leave()
     }
 
-    
+
+
 
 
 }

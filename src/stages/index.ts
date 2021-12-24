@@ -95,7 +95,7 @@ export const ProcessTriggers = (bot:any,socket:any)=>{
                         clear_ctx(_ctx)
                         if (socket != undefined) {
                             console.log('socket is loaded')
-                            _ctx.scene.enter(name)
+                            _ctx.scene.enter(name,{socket:socket})
                             // socket.on('server-broadcast',(payload:any)=>{
                             //     console.log('xxxxxxxx')
                             //     _ctx.reply(JSON.stringify(payload))
