@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = exports.ReverseString = void 0;
-exports.ReverseString = (val) => {
+const ReverseString = (val) => {
     return val.split('').reverse().join('');
 };
+exports.ReverseString = ReverseString;
 class User {
     constructor(_uObj) {
         this.userObj = _uObj;
