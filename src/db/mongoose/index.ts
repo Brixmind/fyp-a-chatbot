@@ -34,9 +34,9 @@ const mUserMessages = mongoose.model('user_messages',UserMessages)
 const mGroups = mongoose.model('groups',Groups)
 const mState = mongoose.model('state',State)
 
-mUser.createIndexes()
-mUserMessages.createIndexes()
-mState.createIndexes()
+// mUser.createIndexes()
+// mUserMessages.createIndexes()
+// mState.createIndexes()
 
 export const addUser=(userObj:any)=>{
     return new Promise((resolve,reject)=>{

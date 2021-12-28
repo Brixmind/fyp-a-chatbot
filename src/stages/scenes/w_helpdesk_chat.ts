@@ -1,5 +1,4 @@
 import { Telegraf, Context, Scenes, Markup, session } from 'telegraf'
-import { GetSocket } from '../../lib/socket_client_bridge'
 import { check_ctx_type, kbd_inline,TG_TYPES,CTX_RES, clear_ctx, check_email, get_download_path, set_state, set_state_property } from '../../lib/tg'
 import { Middleware } from '../../middleware/default'
 import { FWizard, DATATYPE, check_ctx_for } from './factory'

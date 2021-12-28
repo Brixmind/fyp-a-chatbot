@@ -24,6 +24,15 @@ io.on('connection',(socket:any)=>{
         socket.broadcast.emit('server-broadcast',{type:'tg-signal',payload:payload,dt:new Date()})
     })
 
+    socket.on('disconnect',(reason:any)=>{
+        if ((reason as string)=='transport close') {
+            console.log(console.log(`user ${socket.id} disconnected`))
+        } else {
+            console.log(`user ${socket.id} disconnected`,reason)
+        }
+        
+    })
+
     setInterval(()=>{
         socket.broadcast.emit('server-broadcast',{type:'ping',dt:new Date()})
     },5000)

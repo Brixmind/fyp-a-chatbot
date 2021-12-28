@@ -7,15 +7,14 @@ import { ReverseString, User } from "./lib"
 import { GetTriggers, PluginInit, ProcessTriggers } from './stages'
 import { InitEvents, Middleware } from './middleware/default'
 import {io, Socket, Socket as SocketClient} from 'socket.io-client'
-import { SocketConnect, SSocket } from './lib/socket_client_bridge'
+import { SSocket } from './lib/socket_client_bridge'
 
 
 console.log('hello world', process.env.BOT_TOKEN)
 
 
 let _ = new SSocket('ws://localhost:5005')
-_.whenConnected().then((socket:any)=>{
-    console.log('it is connected',socket.id)
+_.socketConnect().then((socket:any)=>{
     DBConnect().then((connection:any)=>{
         let bot = new Telegraf(process.env.BOT_TOKEN as string)
 
